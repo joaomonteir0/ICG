@@ -8,7 +8,7 @@ const scene = new THREE.Scene();
 scene.background = new THREE.Color("#AFFFFC");
 
 const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
-camera.position.set(0, 20, 30);
+camera.position.set(0, 20, 50);
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -21,7 +21,7 @@ document.body.appendChild(renderer.domElement);
 
 const light = new THREE.PointLight(new THREE.Color("rgb(244, 170, 150)").multiplyScalar(2), 80, 200);
 light.castShadow = true;
-light.position.set(10, 20, 10);
+light.position.set(0, 20, 6);
 light.shadow.mapSize.width = 512;
 light.shadow.mapSize.height = 512;
 light.shadow.camera.near = 0.5;
@@ -34,8 +34,8 @@ controls.dampingFactor = 0.05;
 controls.target.set(0, 0, 0);
 
 let envmap;
-const max_height = 8;
-const circleRadius = 20;
+const max_height = 12;
+const circleRadius = 150;
 const oceanSize = circleRadius/2 + 4
 
 
@@ -89,7 +89,7 @@ const DIRT2_HEIGHT = max_height * 0;
             transmission: 1,
             transparent: true,
             thickness: 0.5,
-            envMapIntensity: 0.2,
+            envMapIntensity: 0.5,
             roughness: 1,
             metalness: 0.055,
             roughnessMap : textures.water,
@@ -106,7 +106,7 @@ const DIRT2_HEIGHT = max_height * 0;
         new THREE.MeshPhysicalMaterial({
             envMap : envmap,
             map : textures.dirt,
-            envMapIntensity: 0.2,
+            envMapIntensity: 0.5,
             side: THREE.DoubleSide,
         })
     );
@@ -176,7 +176,7 @@ function makeHex(height, position) {
 function hexMesh(geo, map) {
     let mat = new THREE.MeshPhysicalMaterial({
         envMap: envmap,
-        envMapIntensity: 0.1,
+        envMapIntensity: 0.12,
         flatShading: true,
         map
     });
