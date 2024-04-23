@@ -35,7 +35,7 @@ controls.target.set(0, 0, 0);
 
 let envmap;
 const max_height = 20;
-const circleRadius = 40;
+const circleRadius = 30;
 const oceanSize = circleRadius/2 + 4
 
 
