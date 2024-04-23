@@ -34,8 +34,8 @@ controls.dampingFactor = 0.05;
 controls.target.set(0, 0, 0);
 
 let envmap;
-const max_height = 12;
-const circleRadius = 150;
+const max_height = 20;
+const circleRadius = 40;
 const oceanSize = circleRadius/2 + 4
 
 
@@ -106,7 +106,7 @@ const DIRT2_HEIGHT = max_height * 0;
         new THREE.MeshPhysicalMaterial({
             envMap : envmap,
             map : textures.dirt,
-            envMapIntensity: 0.5,
+            envMapIntensity: 0.45,
             side: THREE.DoubleSide,
         })
     );
