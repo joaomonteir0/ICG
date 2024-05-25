@@ -9,7 +9,6 @@ scene.background = new THREE.Color("#AFFFFC");
 
 const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
 camera.position.set(0, 20, 50);
-
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -33,6 +32,7 @@ controls.enableDamping = true;
 controls.dampingFactor = 0.05;
 controls.target.set(0, 0, 0);
 
+// env
 let envmap;
 const max_height = 20;
 const circleRadius = 30;
