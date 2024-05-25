@@ -4,8 +4,17 @@ import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls.js';
 import * as BGU from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import {SimplexNoise} from "three/examples/jsm/math/SimplexNoise"
 
+
+// variáveis de terreno
+let envmap;
+const max_height = 20;
+const circleRadius = 50;
+const oceanSize = circleRadius/2 + 4
+
+
 const scene = new THREE.Scene();
-scene.background = new THREE.Color("#AFFFFC");
+scene.background = new THREE.Color("skyblue");
+
 
 const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
 camera.position.set(0, 20, 50);
@@ -18,26 +27,16 @@ renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 document.body.appendChild(renderer.domElement);
 
-const light = new THREE.PointLight(new THREE.Color("rgb(244, 170, 150)").multiplyScalar(2), 80, 200);
-light.castShadow = true;
-light.position.set(0, 20, 6);
-light.shadow.mapSize.width = 512;
-light.shadow.mapSize.height = 512;
-light.shadow.camera.near = 0.5;
-light.shadow.camera.far = 500;
-scene.add(light);
+const skyColor = 0x11183b; 
+const groundColor = 0xB97A20; 
+const intensity = 2;
+const light2 = new THREE.HemisphereLight(skyColor, groundColor, intensity);
+scene.add(light2);
 
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 controls.dampingFactor = 0.05;
 controls.target.set(0, 0, 0);
-
-// env
-let envmap;
-const max_height = 20;
-const circleRadius = 30;
-const oceanSize = circleRadius/2 + 4
-
 
 const STONE_HEIGHT = max_height * 0.8;
 const GRASS_HEIGHT = max_height * 0.5;
@@ -128,6 +127,35 @@ const DIRT2_HEIGHT = max_height * 0;
 
     scene.add(stoneMesh, grassMesh, dirtMesh, dirt2Mesh, sandMesh);
 
+    // Function to create and add clouds
+    function createCloud(position) {
+        let cloud = new THREE.Group();
+        let cloudMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff });
+
+        for (let i = 0; i < 4 + Math.random() * 4; i++) {
+            let geometry = new THREE.SphereGeometry(1 + Math.random(), 32, 32);
+            let sphere = new THREE.Mesh(geometry, cloudMaterial);
+            sphere.position.set(
+                (Math.random()) * circleRadius * 0.1,  // Adjusted to fit within a fraction of the circle radius
+                (Math.random()) * circleRadius * 0.1,  // Adjusted to fit within a fraction of the circle radius
+                (Math.random()) * circleRadius * 0.1   // Adjusted to fit within a fraction of the circle radius
+            );
+            sphere.castShadow = true;
+            cloud.add(sphere);
+        }
+
+        cloud.position.copy(position);
+        scene.add(cloud);
+    }
+
+    const cloudCount = (Math.random())*circleRadius; // Number of clouds
+    for (let i = 0; i < cloudCount; i++) {
+        let x = (Math.random() - 0.65) * circleRadius;
+        let z = (Math.random() - 0.55) * circleRadius;
+        let y = max_height + 5 + Math.random()*10;
+        console.log(x,y,z);
+        createCloud(new THREE.Vector3(x, y, z));
+    }
 
     renderer.setAnimationLoop(() => {
         controls.update();
