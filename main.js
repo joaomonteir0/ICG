@@ -3,8 +3,8 @@ import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import * as BGU from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { SimplexNoise } from 'three/examples/jsm/math/SimplexNoise.js';
-
 import { tileToPosition, hexMesh } from './functions.js';
+
 
 let envmap;
 let max_height = 15;
