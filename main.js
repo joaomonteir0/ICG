@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import * as BGU from 'three/examples/jsm/utils/BufferGeometryUtils.js';
-import { SimplexNoise } from "three/examples/jsm/math/SimplexNoise";
+import { SimplexNoise } from 'three/examples/jsm/math/SimplexNoise.js';
 
 import { tileToPosition, hexMesh } from './functions.js';
 
@@ -26,8 +26,8 @@ renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 document.body.appendChild(renderer.domElement);
 
 // Create a directional light to simulate moonlight
-const moonLight = new THREE.DirectionalLight(new THREE.Color(0x8899ff), 1);
-moonLight.position.set(-10, 20, -10);
+const moonLight = new THREE.DirectionalLight(new THREE.Color(0x8899ff), 4);
+moonLight.position.set(-10, max_height + 5, -10);
 moonLight.castShadow = true;
 moonLight.shadow.mapSize.width = 512;
 moonLight.shadow.mapSize.height = 512;
@@ -205,13 +205,14 @@ async function generateTerrain() {
         let cloud = new THREE.Group();
         let cloudMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff });
 
-        for (let i = 0; i < 4 + Math.random() * 4; i++) {
-            let geometry = new THREE.SphereGeometry(1 + Math.random(), 32, 32);
+        let numSpheres = Math.floor(3 + Math.random() * 3);
+        for (let i = 0; i < numSpheres; i++) {
+            let geometry = new THREE.SphereGeometry(1.2 + Math.random(), 32, 32);
             let sphere = new THREE.Mesh(geometry, cloudMaterial);
             sphere.position.set(
-                (Math.random() - 0.5) * circleRadius * 0.2,
-                (Math.random() - 0.5) * circleRadius * 0.1,
-                (Math.random() - 0.5) * circleRadius * 0.2
+                (Math.random() - 0.5) * 4,
+                (Math.random() - 0.5) * 2,
+                (Math.random() - 0.5) * 4
             );
             sphere.castShadow = true;
             cloud.add(sphere);
@@ -223,8 +224,8 @@ async function generateTerrain() {
 
     const cloudCount = Math.random() * circleRadius; // Number of clouds
     for (let i = 0; i < cloudCount; i++) {
-        let x = (Math.random() - 0.65) * circleRadius;
-        let z = (Math.random() - 0.65) * circleRadius;
+        let x = (Math.random() - 0.5) * circleRadius * 1.5;
+        let z = (Math.random() - 0.5) * circleRadius * 1.5;
         let y = max_height + 5 + Math.random() * 10;
         createCloud(new THREE.Vector3(x, y, z));
     }
@@ -236,4 +237,3 @@ async function generateTerrain() {
 }
 
 generateTerrain();
-
