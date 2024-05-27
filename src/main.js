@@ -5,7 +5,6 @@ import * as BGU from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { SimplexNoise } from 'three/examples/jsm/math/SimplexNoise.js';
 import { tileToPosition, hexMesh } from './functions.js';
 
-
 let envmap;
 let max_height = 15;
 let circleRadius = 20;
@@ -25,7 +24,7 @@ renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 document.body.appendChild(renderer.domElement);
 
-// Create a directional light to simulate moonlight
+// Create lights
 const moonLight = new THREE.DirectionalLight(new THREE.Color(0x8899ff), 4);
 moonLight.position.set(-10, max_height + 5, -10);
 moonLight.castShadow = true;
@@ -35,7 +34,16 @@ moonLight.shadow.camera.near = 0.5;
 moonLight.shadow.camera.far = 1000;
 scene.add(moonLight);
 
-// Add an ambient light to soften shadows and add some base illumination
+const sunLight = new THREE.DirectionalLight(new THREE.Color(0xffffff), 4);
+sunLight.position.set(-10, max_height + 5, -10);
+sunLight.castShadow = true;
+sunLight.shadow.mapSize.width = 512;
+sunLight.shadow.mapSize.height = 512;
+sunLight.shadow.camera.near = 0.5;
+sunLight.shadow.camera.far = 1000;
+sunLight.visible = false; // Initially hidden
+scene.add(sunLight);
+
 const ambientLight = new THREE.AmbientLight(new THREE.Color(0x404040), 0.3);
 scene.add(ambientLight);
 
@@ -58,10 +66,25 @@ form.addEventListener('submit', (event) => {
 
     // Re-add lights and controls
     scene.add(moonLight);
+    scene.add(sunLight);
     scene.add(ambientLight);
     controls.target.set(0, 0, 0);
 
     generateTerrain();
+});
+
+// Function to update lighting based on checkbox
+const dayNightToggle = document.getElementById('dayNightToggle');
+dayNightToggle.addEventListener('change', () => {
+    if (dayNightToggle.checked) {
+        sunLight.visible = true;
+        moonLight.visible = false;
+        scene.background.set("#87CEEB"); // Set to day sky color
+    } else {
+        sunLight.visible = false;
+        moonLight.visible = true;
+        scene.background.set("#131345"); // Set to night sky color
+    }
 });
 
 let stoneGeometry = new THREE.BoxGeometry(0, 0, 0);
@@ -75,13 +98,11 @@ let hexagonGeometries = new THREE.BoxGeometry(0, 0, 0);
 function hexGeometry(height, position) {
     let geo = new THREE.CylinderGeometry(1, 1, height, 6, 1, false);
     geo.translate(position.x, height * 0.5, position.y);
-
     return geo;
 }
 
 function makeHex(height, position) {
     let geo = hexGeometry(height, position);
-
     if (height > STONE_HEIGHT) {
         stoneGeometry = BGU.mergeGeometries([geo, stoneGeometry]);
     } else if (height > GRASS_HEIGHT) {
@@ -95,12 +116,37 @@ function makeHex(height, position) {
     }
 }
 
-
 const STONE_HEIGHT = max_height * 0.8;
 const GRASS_HEIGHT = max_height * 0.5;
 const DIRT_HEIGHT = max_height * 0.7;
 const SAND_HEIGHT = max_height * 0.3;
 const DIRT2_HEIGHT = max_height * 0;
+
+let clouds = []; // Array to hold cloud objects
+
+// Function to create and add clouds
+function createCloud(position) {
+    console.log("Creating cloud");
+    let cloud = new THREE.Group();
+    let cloudMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff });
+
+    let numSpheres = Math.floor(3 + Math.random() * 1);
+    for (let i = 0; i < numSpheres; i++) {
+        let geometry = new THREE.SphereGeometry(1.2 + Math.random(), 32, 32);
+        let sphere = new THREE.Mesh(geometry, cloudMaterial);
+        sphere.position.set(
+            (Math.random() - 0.5) * 4,
+            (Math.random() - 0.5) * 2,
+            (Math.random() - 0.5) * 4
+        );
+        sphere.castShadow = true;
+        cloud.add(sphere);
+    }
+
+    cloud.position.copy(position);
+    clouds.push(cloud); // Add cloud to array
+    scene.add(cloud);
+}
 
 async function generateTerrain() {
     // Clear all meshes from the scene
@@ -124,14 +170,13 @@ async function generateTerrain() {
     const DIRT2_HEIGHT = max_height * 0;
 
     let textures = {
-        dirt: new THREE.TextureLoader().load('/assets/dirt.jpg'),
-        dirt2: new THREE.TextureLoader().load('/assets/dirt2.jpeg'),
-        grass: new THREE.TextureLoader().load('/assets/grass.jpg'),
-        sand: new THREE.TextureLoader().load('/assets/sand.jpg'),
-        stone: new THREE.TextureLoader().load('/assets/stone.png'),
-        water: new THREE.TextureLoader().load('/assets/water.jpg')
+        dirt: new THREE.TextureLoader().load('assets/dirt.jpg'),
+        dirt2: new THREE.TextureLoader().load('assets/dirt2.jpeg'),
+        grass: new THREE.TextureLoader().load('assets/grass.jpg'),
+        sand: new THREE.TextureLoader().load('assets/sand.jpg'),
+        stone: new THREE.TextureLoader().load('assets/stone.png'),
+        water: new THREE.TextureLoader().load('assets/water.jpg')
     };
-    
     const simplex = new SimplexNoise();
 
     for (let i = -circleRadius; i <= circleRadius; i++) {
@@ -201,40 +246,43 @@ async function generateTerrain() {
 
     scene.add(stoneMesh, grassMesh, dirtMesh, dirt2Mesh, sandMesh);
 
-    // Function to create and add clouds
-    function createCloud(position) {
-        let cloud = new THREE.Group();
-        let cloudMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff });
-
-        let numSpheres = Math.floor(3 + Math.random() * 3);
-        for (let i = 0; i < numSpheres; i++) {
-            let geometry = new THREE.SphereGeometry(1.2 + Math.random(), 32, 32);
-            let sphere = new THREE.Mesh(geometry, cloudMaterial);
-            sphere.position.set(
-                (Math.random() - 0.5) * 4,
-                (Math.random() - 0.5) * 2,
-                (Math.random() - 0.5) * 4
-            );
-            sphere.castShadow = true;
-            cloud.add(sphere);
-        }
-
-        cloud.position.copy(position);
-        scene.add(cloud);
-    }
-
-    const cloudCount = Math.random() * circleRadius; // Number of clouds
+    const cloudCount = Math.random() * circleRadius/2.2; // Number of clouds
     for (let i = 0; i < cloudCount; i++) {
-        let x = (Math.random() - 0.5) * circleRadius * 1.5;
-        let z = (Math.random() - 0.5) * circleRadius * 1.5;
+        let x = (Math.random() - 0.5) * circleRadius * 1;
+        let z = (Math.random() - 0.5) * circleRadius * 1;
         let y = max_height + 5 + Math.random() * 10;
         createCloud(new THREE.Vector3(x, y, z));
     }
 
     renderer.setAnimationLoop(() => {
         controls.update();
+        moveClouds();
         renderer.render(scene, camera);
     });
+}
+
+// Function to move clouds
+function moveClouds() {
+    const cloudSpeed = 0.05;
+    const direction = new THREE.Vector3(1, 0, 0); // Move clouds along x-axis
+
+    for (let i = clouds.length - 1; i >= 0; i--) {
+        let cloud = clouds[i];
+        cloud.position.add(direction.clone().multiplyScalar(cloudSpeed));
+
+        // Check if cloud is out of bounds
+        if (cloud.position.x > circleRadius * 0.8) {
+            // Remove cloud from scene and array
+            scene.remove(cloud);
+            clouds.splice(i, 1);
+
+            // Create new cloud at the opposite side
+            let x = -circleRadius;
+            let z = (Math.random() - 0.5) * circleRadius * 1.5;
+            let y = max_height + 5 + Math.random() * 10;
+            createCloud(new THREE.Vector3(x*Math.random()*1.5, y, z));
+        }
+    }
 }
 
 generateTerrain();
