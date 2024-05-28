@@ -10,8 +10,8 @@
     <div class="gui">
         <form id="terrainForm">
             <div class="form-group">
-                <label for="circleRadius">Circle Radius:</label>
-                <input type="number" id="circleRadius" value="40">
+                <label for="circleRadius">World Size:</label>
+                <input type="number" id="circleRadius" value="25">
             </div>
             <div class="form-group">
                 <label for="maxHeight">Max Height:</label>
@@ -23,6 +23,10 @@
                     <input type="checkbox" id="dayNightToggle">
                     <span class="slider round"></span>
                 </label>
+            </div>
+            <div class="form-group" style="margin-top: 10px;">
+                <label for="controlLight">Illumination:</label>
+                <input type="range" id="controlLight" min="1" max="10" value="5">
             </div>            
             <button type="submit">Generate</button>
         </form>
