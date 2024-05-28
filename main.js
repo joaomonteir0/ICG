@@ -11,14 +11,15 @@ let circleRadius = 20;
 let oceanSize = circleRadius / 2 + 4;
 let clouds = []; 
 let textures = {
-    dirt: new THREE.TextureLoader().load('assets/dirt.jpg'),
-    dirt2: new THREE.TextureLoader().load('assets/dirt2.jpeg'),
-    grass: new THREE.TextureLoader().load('assets/grass.jpg'),
-    sand: new THREE.TextureLoader().load('assets/sand.jpg'),
-    stone: new THREE.TextureLoader().load('assets/stone.png'),
-    water: new THREE.TextureLoader().load('assets/water.jpg'),
-    leaves: new THREE.TextureLoader().load('assets/leaves.png'),
+    dirt: new THREE.TextureLoader().load('/assets/dirt.jpg'),
+    dirt2: new THREE.TextureLoader().load('/assets/dirt2.jpeg'),
+    grass: new THREE.TextureLoader().load('/assets/grass.jpg'),
+    sand: new THREE.TextureLoader().load('/assets/sand.jpg'),
+    stone: new THREE.TextureLoader().load('/assets/stone.png'),
+    water: new THREE.TextureLoader().load('/assets/water.jpg'),
+    leaves: new THREE.TextureLoader().load('/assets/leaves.png'),
 };
+
 const scene = new THREE.Scene();
 scene.background = new THREE.Color("#131345");
 
