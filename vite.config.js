@@ -1,16 +1,5 @@
-import { defineConfig } from 'vite';
-import { resolve } from 'path';
+import { defineConfig } from 'vite'
 
 export default defineConfig({
-  resolve: {
-    alias: {
-      '@': resolve(__dirname, 'src')
-    }
-  },
-  build: {
-    outDir: 'dist',
-    rollupOptions: {
-      input: '/src/main.js'
-    }
-  }
-});
+    base: "/ICG/",
+})
