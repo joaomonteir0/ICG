@@ -47,6 +47,16 @@ html, body {
     font-size: 18px;
 }
 
+.gui select {
+  width: 200px;
+  padding: 10px;
+  margin: 5px 0;
+  border: none;
+  border-bottom: 2px solid #fff;
+  outline: none;
+  font-size: 18px;
+}
+
 .gui button {
     margin-top: 30px;
     width: 220px;

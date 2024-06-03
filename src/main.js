@@ -7,7 +7,7 @@ import { tileToPosition, hexMesh } from './functions.js';
 
 let envmap;
 let max_height = 15;
-let circleRadius = 20;
+let circleRadius = 25;
 let oceanSize = circleRadius / 2 + 4;
 let clouds = []; 
 let textures = {
@@ -34,18 +34,18 @@ renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 document.body.appendChild(renderer.domElement);
 
-// Default light settings (used for scaling)
+// scale nas luzes
 const defaultMoonLightIntensity = 0.6;
 const defaultSunLightIntensity = 1.2;
 const defaultAmbientLightIntensity = 0.3;
 const defaultFillLightIntensity = 0.6;
 
-// Create lights
+// iniciar luzes
 const moonLight = new THREE.DirectionalLight(new THREE.Color(0x8899ff), defaultMoonLightIntensity);
 moonLight.position.set(-10, max_height + 5, -10);
 moonLight.castShadow = true;
-moonLight.shadow.mapSize.width = 2048; // Higher resolution for better shadow quality
-moonLight.shadow.mapSize.height = 2048; // Higher resolution for better shadow quality
+moonLight.shadow.mapSize.width = 2048; // diminuir se der crash (quanto maior maior a resolução das sombras)
+moonLight.shadow.mapSize.height = 2048; // diminuir se der crash (quanto maior maior a resolução das sombras)
 moonLight.shadow.camera.near = 0.5;
 moonLight.shadow.camera.far = 1000;
 moonLight.shadow.camera.left = -50;
@@ -57,15 +57,15 @@ scene.add(moonLight);
 const sunLight = new THREE.DirectionalLight(new THREE.Color(0xffffff), defaultSunLightIntensity);
 sunLight.position.set(-30, max_height + 20, -30);
 sunLight.castShadow = true;
-sunLight.shadow.mapSize.width = 2048; // Higher resolution for better shadow quality
-sunLight.shadow.mapSize.height = 2048; // Higher resolution for better shadow quality
+sunLight.shadow.mapSize.width = 2048; 
+sunLight.shadow.mapSize.height = 2048; 
 sunLight.shadow.camera.near = 0.5;
 sunLight.shadow.camera.far = 1000;
 sunLight.shadow.camera.left = -50;
 sunLight.shadow.camera.right = 50;
 sunLight.shadow.camera.top = 50;
 sunLight.shadow.camera.bottom = -50;
-sunLight.visible = false; // Initially hidden
+sunLight.visible = false;
 scene.add(sunLight);
 
 const fillLight = new THREE.HemisphereLight(0xffffff, 0x444444, defaultFillLightIntensity);
@@ -218,7 +218,7 @@ const SAND_HEIGHT = max_height * 0.3;
 const DIRT2_HEIGHT = max_height * 0;
 
 
-// Function to create and add clouds
+// criar nuvens
 function createCloud(position) {
     console.log("Creating cloud");
     let cloud = new THREE.Group();
@@ -247,7 +247,8 @@ function createCloud(position) {
 }
 
 async function generateTerrain() {
-    // limpar a cena
+    console.log(circleRadius);
+    // limpar cena
     for (let i = scene.children.length - 1; i >= 0; i--) {
         if (scene.children[i].type === "Mesh") {
             scene.remove(scene.children[i]);
@@ -259,22 +260,34 @@ async function generateTerrain() {
     grassGeometry = new THREE.BoxGeometry(0, 0, 0);
     sandGeometry = new THREE.BoxGeometry(0, 0, 0);
     dirt2Geometry = new THREE.BoxGeometry(0, 0, 0);
-    leavesGeometry = new THREE.BoxGeometry(0, 0,0);
-
+    leavesGeometry = new THREE.BoxGeometry(0, 0, 0);
 
     const simplex = new SimplexNoise();
+    const worldType = document.getElementById('worldType').value;
 
-    for (let i = -circleRadius; i <= circleRadius; i++) {
-        for (let j = -circleRadius; j <= circleRadius; j++) {
-            let position = tileToPosition(i, j);
-            if (position.length() > circleRadius / 2) {
-                continue;
+    if (worldType === 'circle') {
+        for (let i = -circleRadius; i <= circleRadius; i++) {
+            for (let j = -circleRadius; j <= circleRadius; j++) {
+                let position = tileToPosition(i, j);
+                if (position.length() > circleRadius / 2) {
+                    continue;
+                }
+                let noise = (simplex.noise(i * 0.1, j * 0.1) + 1) * 0.5;
+                noise = Math.pow(noise, 1.5);
+                makeHex(noise * max_height, position);
             }
-            let noise = (simplex.noise(i * 0.1, j * 0.1) + 1) * 0.5;
-            noise = Math.pow(noise, 1.5);
-
-            makeHex(noise * max_height, position);
         }
+        oceanSize = circleRadius / 2 + 4;
+    } else {
+        for (let i = -circleRadius / 2; i <= circleRadius / 2; i++) {
+            for (let j = -circleRadius / 2; j <= circleRadius / 2; j++) {
+                let position = tileToPosition(i, j);
+                let noise = (simplex.noise(i * 0.1, j * 0.1) + 1) * 0.5;
+                noise = Math.pow(noise, 1.5);
+                makeHex(noise * max_height, position);
+            }
+        }
+        oceanSize = (circleRadius / 2 + 4)*2;
     }
 
     let stoneMesh = hexMesh(stoneGeometry, textures.stone, envmap);
@@ -333,7 +346,7 @@ async function generateTerrain() {
     scene.add(stoneMesh, grassMesh, dirtMesh, dirt2Mesh, sandMesh);
 
     let cloudCount = Math.random() * circleRadius / 2.2; // Number of clouds
-    if (cloudCount < 2 || cloudCount > circleRadius / 2){
+    if (cloudCount < 2 || cloudCount > circleRadius / 2) {
         cloudCount = circleRadius / 2;
     }
     for (let i = 0; i < cloudCount; i++) {

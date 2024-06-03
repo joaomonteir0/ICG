@@ -1,5 +1,8 @@
 import { defineConfig } from 'vite'
 
 export default defineConfig({
-    base: "/ICG/",
+  base: '/', // Adjust this if your project is served from a subdirectory
+  build: {
+    outDir: 'dist'
+  }
 })
