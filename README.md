@@ -21,4 +21,10 @@ Projeto: https://proceduralgen.netlify.app/
 
 Slides: https://www.canva.com/design/DAGDDP2SUYs/WfUZdt5SnJAGDIJHy7uuvA/edit?utm_content=DAGDDP2SUYs&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton
 
+## Correr o projeto
+1º : `npm install`<br>
+
+2º : `npx vite`
+
+
 <b> João Monteiro, 102690 - LECI</b>
