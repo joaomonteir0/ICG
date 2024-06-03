@@ -19,4 +19,6 @@ A geração procedural de mundos é uma técnica utilizada em diversos jogos mui
 
 Projeto: https://proceduralgen.netlify.app/
 
+Slides: https://www.canva.com/design/DAGDDP2SUYs/WfUZdt5SnJAGDIJHy7uuvA/edit?utm_content=DAGDDP2SUYs&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton
+
 <b> João Monteiro, 102690 - LECI</b>
